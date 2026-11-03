@@ -8,3 +8,9 @@ __pycache__/
 
 .ipynb_checkpoints/
 data/
+
+# Next.js web-app
+web-app/.next/
+web-app/node_modules/
+web-app/.env
+web-app/.env.local
