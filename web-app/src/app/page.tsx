@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Trophy, 
-  Calendar, 
-  Flag, 
-  Gauge, 
-  Clock, 
-  ShieldCheck, 
-  Plus, 
+import {
+  Trophy,
+  Calendar,
+  Flag,
+  Gauge,
+  Clock,
+  ShieldCheck,
+  Plus,
   Trash2,
   TrendingUp,
   Activity,
@@ -16,18 +16,19 @@ import {
   AlertTriangle,
   Radio,
   Layers,
-  ChevronDown
+  ChevronDown,
+  Search
 } from 'lucide-react';
 
 const AVAILABLE_DRIVERS = [
-  { id: 1, code: 'VER', name: 'Max Verstappen', team: 'Red Bull Racing', color: '#06b6d4' },
-  { id: 2, code: 'PER', name: 'Sergio Perez', team: 'Red Bull Racing', color: '#3b82f6' },
-  { id: 3, code: 'ALO', name: 'Fernando Alonso', team: 'Aston Martin', color: '#10b981' },
-  { id: 4, code: 'HAM', name: 'Lewis Hamilton', team: 'Mercedes', color: '#f59e0b' },
-  { id: 5, code: 'LEC', name: 'Charles Leclerc', team: 'Ferrari', color: '#ef4444' },
-  { id: 6, code: 'SAI', name: 'Carlos Sainz', team: 'Ferrari', color: '#f97316' },
-  { id: 7, code: 'NOR', name: 'Lando Norris', team: 'McLaren', color: '#ec4899' },
-  { id: 8, code: 'RUS', name: 'George Russell', team: 'Mercedes', color: '#8b5cf6' },
+  { id: 1, code: 'VER', name: 'Max Verstappen', team: 'Red Bull Racing', color: '#38bdf8' },
+  { id: 2, code: 'PER', name: 'Sergio Perez', team: 'Red Bull Racing', color: '#60a5fa' },
+  { id: 3, code: 'ALO', name: 'Fernando Alonso', team: 'Aston Martin', color: '#34d399' },
+  { id: 4, code: 'HAM', name: 'Lewis Hamilton', team: 'Mercedes', color: '#fbbf24' },
+  { id: 5, code: 'LEC', name: 'Charles Leclerc', team: 'Ferrari', color: '#f87171' },
+  { id: 6, code: 'SAI', name: 'Carlos Sainz', team: 'Ferrari', color: '#fb923c' },
+  { id: 7, code: 'NOR', name: 'Lando Norris', team: 'McLaren', color: '#f472b6' },
+  { id: 8, code: 'RUS', name: 'George Russell', team: 'Mercedes', color: '#a78bfa' },
 ];
 
 export default function Dashboard() {
@@ -47,7 +48,7 @@ export default function Dashboard() {
   const [noteTitle, setNoteTitle] = useState('');
   const [noteContent, setNoteContent] = useState('');
   const [noteTyre, setNoteTyre] = useState('Hard');
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
 
   // NoSQL Telemetry & Events states (Student B)
   const [selectedLap, setSelectedLap] = useState<number>(15);
@@ -104,7 +105,6 @@ export default function Dashboard() {
         setLoading(false);
       });
 
-    // Also reload NoSQL telemetry & events for the race
     loadTelemetryData(selectedRaceId, selectedLap, driverAId, driverBId);
     loadRaceEvents(selectedRaceId);
     loadSpeedTrap(selectedRaceId);
@@ -236,15 +236,15 @@ export default function Dashboard() {
     }
   };
 
-  // Helper to render responsive SVG path for telemetry curves
+  // Helper to render minimalist SVG telemetry trace
   const renderSvgTelemetry = () => {
     const samplesA = telemetrySamples.filter((s) => s.driver_id === driverAId);
     const samplesB = telemetrySamples.filter((s) => s.driver_id === driverBId);
 
     const width = 640;
-    const height = 220;
-    const padX = 40;
-    const padY = 25;
+    const height = 180;
+    const padX = 35;
+    const padY = 20;
 
     let minVal = 0;
     let maxVal = 350;
@@ -289,27 +289,16 @@ export default function Dashboard() {
     const pathB = makePath(samplesB);
 
     return (
-      <div className="relative w-full overflow-hidden">
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-56 select-none">
-          <defs>
-            <linearGradient id="gradA" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.0" />
-            </linearGradient>
-            <linearGradient id="gradB" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.0" />
-            </linearGradient>
-          </defs>
-
-          {/* Grid lines */}
-          {[0, 0.25, 0.5, 0.75, 1].map((pct, i) => {
+      <div className="relative w-full">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-44 select-none">
+          {/* Subtle grid lines */}
+          {[0, 0.5, 1].map((pct, i) => {
             const y = height - padY - pct * (height - padY * 2);
             const valLabel = Math.round(minVal + pct * (maxVal - minVal));
             return (
               <g key={i}>
-                <line x1={padX} y1={y} x2={width - padX} y2={y} stroke="#334155" strokeDasharray="3 3" strokeWidth="0.8" />
-                <text x={padX - 8} y={y + 3} fill="#94a3b8" fontSize="9" textAnchor="end" fontFamily="monospace">
+                <line x1={padX} y1={y} x2={width - padX} y2={y} stroke="#1e293b" strokeWidth="1" />
+                <text x={padX - 8} y={y + 3} fill="#64748b" fontSize="9" textAnchor="end" fontFamily="monospace">
                   {valLabel}
                 </text>
               </g>
@@ -317,120 +306,117 @@ export default function Dashboard() {
           })}
 
           {/* Curve Driver A */}
-          {pathA && <path d={pathA} fill="none" stroke="#06b6d4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />}
+          {pathA && <path d={pathA} fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
           {/* Curve Driver B */}
-          {pathB && <path d={pathB} fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="4 2" strokeLinecap="round" strokeLinejoin="round" />}
+          {pathB && <path d={pathB} fill="none" stroke="#fbbf24" strokeWidth="1.8" strokeDasharray="3 3" strokeLinecap="round" strokeLinejoin="round" />}
 
-          {/* X Axis Labels */}
-          <text x={padX} y={height - 6} fill="#64748b" fontSize="9" textAnchor="start">Turn 1 (0%)</text>
-          <text x={width / 2} y={height - 6} fill="#64748b" fontSize="9" textAnchor="middle">Sector 2 Mid-Lap (50%)</text>
-          <text x={width - padX} y={height - 6} fill="#64748b" fontSize="9" textAnchor="end">Main Straight (100%)</text>
+          {/* Minimal X Labels */}
+          <text x={padX} y={height - 4} fill="#475569" fontSize="9" textAnchor="start">Sector 1</text>
+          <text x={width / 2} y={height - 4} fill="#475569" fontSize="9" textAnchor="middle">Sector 2</text>
+          <text x={width - padX} y={height - 4} fill="#475569" fontSize="9" textAnchor="end">Sector 3</text>
         </svg>
 
         {/* Legend */}
-        <div className="flex items-center justify-between text-xs px-2 pt-2 border-t border-slate-800">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between text-xs pt-3 mt-1 border-t border-slate-800/80">
+          <div className="flex items-center gap-5">
             <div className="flex items-center gap-2">
-              <span className="w-3.5 h-1 bg-cyan-400 rounded-full inline-block"></span>
-              <span className="text-white font-bold">{AVAILABLE_DRIVERS.find(d => d.id === driverAId)?.code} ({AVAILABLE_DRIVERS.find(d => d.id === driverAId)?.name})</span>
+              <span className="w-2.5 h-0.5 bg-sky-400 rounded-full inline-block"></span>
+              <span className="text-slate-200 font-medium text-xs">
+                {AVAILABLE_DRIVERS.find(d => d.id === driverAId)?.code}
+              </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-3.5 h-1 bg-amber-400 rounded-full inline-block border-b border-dashed"></span>
-              <span className="text-slate-300 font-bold">{AVAILABLE_DRIVERS.find(d => d.id === driverBId)?.code} ({AVAILABLE_DRIVERS.find(d => d.id === driverBId)?.name})</span>
+              <span className="w-2.5 h-0.5 bg-amber-400 rounded-full inline-block"></span>
+              <span className="text-slate-400 font-medium text-xs">
+                {AVAILABLE_DRIVERS.find(d => d.id === driverBId)?.code}
+              </span>
             </div>
           </div>
-          <span className="text-[11px] font-mono text-slate-400">Unit: {unit}</span>
+          <span className="text-[11px] font-mono text-slate-500">{unit}</span>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Top Header */}
-      <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-neutral-950 text-slate-200 flex flex-col font-sans antialiased selection:bg-slate-800">
+      {/* Top Header - Clean, low visual noise */}
+      <header className="border-b border-neutral-900 bg-neutral-950/80 backdrop-blur-md sticky top-0 z-20 px-6 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-red-600 text-white p-2 rounded-lg font-black tracking-wider text-sm shadow-lg shadow-red-900/30">
+          <div className="w-6 h-6 rounded bg-neutral-800 border border-neutral-700 flex items-center justify-center font-bold text-xs text-neutral-300">
             F1
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight flex items-center gap-2">
-              Motorsport Race Performance & Strategy System
-              <span className="text-[10px] bg-red-950/80 text-red-400 border border-red-800/60 font-semibold px-2 py-0.5 rounded-full">
-                MySQL + MongoDB Hybrid
+            <h1 className="text-sm font-semibold tracking-tight text-white flex items-center gap-2">
+              Motorsport Strategy System
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-400">
+                Hybrid DB
               </span>
             </h1>
-            <p className="text-xs text-slate-400">DBMS Level 3 Capstone • Team 8 (PES University)</p>
           </div>
         </div>
 
-        {/* Role Selector (Rubric Sec. 11) */}
-        <div className="flex items-center gap-2 bg-slate-800/80 p-1.5 rounded-lg border border-slate-700">
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span className="text-xs text-slate-300 font-medium">Role:</span>
-          <select 
-            value={userRole} 
+        {/* Role Selector */}
+        <div className="flex items-center gap-2 bg-neutral-900 px-2.5 py-1 rounded-md border border-neutral-800 text-xs">
+          <ShieldCheck className="w-3.5 h-3.5 text-neutral-400" />
+          <span className="text-neutral-400">Role:</span>
+          <select
+            value={userRole}
             onChange={(e) => setUserRole(e.target.value as any)}
-            className="bg-slate-900 text-xs font-semibold px-2 py-1 rounded text-emerald-400 focus:outline-none cursor-pointer"
+            className="bg-transparent text-neutral-200 font-medium focus:outline-none cursor-pointer"
           >
-            <option value="Strategist">Race Strategist (Admin/CRUD)</option>
-            <option value="Viewer">Spectator / Viewer (Read-only)</option>
+            <option value="Strategist" className="bg-neutral-900">Race Strategist (CRUD)</option>
+            <option value="Viewer" className="bg-neutral-900">Viewer (Read-only)</option>
           </select>
         </div>
       </header>
 
-      {/* Navigation Tabs */}
-      <nav className="border-b border-slate-800 bg-slate-900/40 px-6 flex gap-6 overflow-x-auto">
+      {/* Navigation Tabs - Understated pills */}
+      <nav className="border-b border-neutral-900 bg-neutral-950 px-6 flex gap-1 overflow-x-auto text-xs py-2">
         <button
           onClick={() => setActiveTab('races')}
-          className={`py-3.5 text-sm font-semibold flex items-center gap-2 border-b-2 transition whitespace-nowrap ${
-            activeTab === 'races'
-              ? 'border-red-500 text-white'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
+          className={`px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'races'
+              ? 'bg-neutral-800 text-white'
+              : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+            }`}
         >
-          <Flag className="w-4 h-4" /> Grand Prix Results
+          <Flag className="w-3.5 h-3.5 text-neutral-400" /> Grand Prix Results
         </button>
         <button
           onClick={() => setActiveTab('standings')}
-          className={`py-3.5 text-sm font-semibold flex items-center gap-2 border-b-2 transition whitespace-nowrap ${
-            activeTab === 'standings'
-              ? 'border-red-500 text-white'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
+          className={`px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'standings'
+              ? 'bg-neutral-800 text-white'
+              : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+            }`}
         >
-          <Trophy className="w-4 h-4" /> Championship Standings
+          <Trophy className="w-3.5 h-3.5 text-neutral-400" /> Standings
         </button>
         <button
           onClick={() => setActiveTab('driver-card')}
-          className={`py-3.5 text-sm font-semibold flex items-center gap-2 border-b-2 transition whitespace-nowrap ${
-            activeTab === 'driver-card'
-              ? 'border-red-500 text-white'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
+          className={`px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'driver-card'
+              ? 'bg-neutral-800 text-white'
+              : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+            }`}
         >
-          <Gauge className="w-4 h-4" /> Stored Procedure Analytics
+          <Gauge className="w-3.5 h-3.5 text-neutral-400" /> Driver Card(Proc)
         </button>
         <button
           onClick={() => setActiveTab('strategy')}
-          className={`py-3.5 text-sm font-semibold flex items-center gap-2 border-b-2 transition whitespace-nowrap ${
-            activeTab === 'strategy'
-              ? 'border-red-500 text-white'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
+          className={`px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'strategy'
+              ? 'bg-neutral-800 text-white'
+              : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+            }`}
         >
-          <Activity className="w-4 h-4" /> Strategy Desk (CRUD)
+          <Activity className="w-3.5 h-3.5 text-neutral-400" /> Strategy Desk
         </button>
-        {/* STUDENT B NOSQL TAB */}
         <button
           onClick={() => setActiveTab('telemetry')}
-          className={`py-3.5 text-sm font-bold flex items-center gap-2 border-b-2 transition whitespace-nowrap ${
-            activeTab === 'telemetry'
-              ? 'border-cyan-400 text-cyan-300'
-              : 'border-transparent text-slate-400 hover:text-cyan-200'
-          }`}
+          className={`px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'telemetry'
+              ? 'bg-neutral-800 text-white'
+              : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+            }`}
         >
-          <Zap className="w-4 h-4 text-cyan-400" /> Telemetry & Race Events (MongoDB NoSQL)
+          <Zap className="w-3.5 h-3.5 text-neutral-400" /> Telemetry & Events
         </button>
       </nav>
 
@@ -438,30 +424,29 @@ export default function Dashboard() {
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
         {/* TAB 1: RACES & CLASSIFICATION */}
         {activeTab === 'races' && (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
             {/* Race List Sidebar */}
-            <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-xl p-4 max-h-[78vh] overflow-y-auto">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-red-500" /> 2023 Race Calendar
-              </h2>
-              <div className="space-y-1.5">
+            <div className="lg:col-span-1 bg-neutral-900/50 border border-neutral-900 rounded-lg p-3 max-h-[80vh] overflow-y-auto">
+              <div className="text-xs font-semibold text-neutral-400 mb-2 px-1 flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-neutral-500" /> 2023 Calendar
+              </div>
+              <div className="space-y-1">
                 {races.map((r) => (
                   <button
                     key={r.race_id}
                     onClick={() => setSelectedRaceId(r.race_id)}
-                    className={`w-full text-left p-2.5 rounded-lg text-xs font-medium transition flex items-center justify-between ${
-                      selectedRaceId === r.race_id
-                        ? 'bg-red-600/20 text-red-400 border border-red-500/40'
-                        : 'hover:bg-slate-800 text-slate-300'
-                    }`}
+                    className={`w-full text-left px-3 py-2 rounded text-xs transition flex items-center justify-between ${selectedRaceId === r.race_id
+                        ? 'bg-neutral-800 text-white border border-neutral-700/60'
+                        : 'hover:bg-neutral-900 text-neutral-400 hover:text-neutral-200'
+                      }`}
                   >
                     <div>
-                      <div className="font-semibold text-white">R{r.round_no} {r.circuit_name}</div>
-                      <div className="text-[11px] text-slate-400">{r.country} • {r.race_date.split('T')[0]}</div>
+                      <div className="font-medium text-slate-200">R{r.round_no} {r.circuit_name}</div>
+                      <div className="text-[11px] text-neutral-500">{r.country}</div>
                     </div>
                     {r.winner_name && (
-                      <span className="text-[10px] bg-slate-800 text-amber-400 px-1.5 py-0.5 rounded font-mono">
-                        🏆 {r.winner_name.split(' ').pop()}
+                      <span className="text-[10px] text-neutral-400 font-mono">
+                        {r.winner_name.split(' ').pop()}
                       </span>
                     )}
                   </button>
@@ -473,57 +458,55 @@ export default function Dashboard() {
             <div className="lg:col-span-3 space-y-6">
               {raceDetails && (
                 <>
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                    <div className="flex justify-between items-center mb-4">
+                  <div className="bg-neutral-900/40 border border-neutral-900 rounded-lg p-5">
+                    <div className="flex justify-between items-baseline mb-4 pb-3 border-b border-neutral-900">
                       <div>
-                        <span className="text-xs font-bold text-red-500 tracking-wide uppercase">
+                        <div className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">
                           Round {raceDetails.race.round_no}
-                        </span>
-                        <h2 className="text-xl font-bold text-white">{raceDetails.race.circuit_name}</h2>
-                        <p className="text-xs text-slate-400">{raceDetails.race.location}, {raceDetails.race.country}</p>
+                        </div>
+                        <h2 className="text-base font-semibold text-white">{raceDetails.race.circuit_name}</h2>
+                        <div className="text-xs text-neutral-400">{raceDetails.race.location}, {raceDetails.race.country}</div>
                       </div>
-                      <div className="text-right">
-                        <span className="text-xs text-slate-400">Total Classified</span>
-                        <div className="text-lg font-black text-emerald-400">{raceDetails.results.length} Cars</div>
+                      <div className="text-xs font-mono text-neutral-400">
+                        {raceDetails.results.length} Drivers Classified
                       </div>
                     </div>
 
                     {/* Classification Table */}
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs">
-                        <thead className="bg-slate-800/60 text-slate-400 uppercase text-[10px]">
+                        <thead className="border-b border-neutral-800 text-neutral-400 text-[11px] font-medium">
                           <tr>
-                            <th className="p-2.5 rounded-l">Pos</th>
-                            <th className="p-2.5">Driver</th>
-                            <th className="p-2.5">Team</th>
-                            <th className="p-2.5">Grid</th>
-                            <th className="p-2.5">+/-</th>
-                            <th className="p-2.5">Laps</th>
-                            <th className="p-2.5">Status</th>
-                            <th className="p-2.5 rounded-r">Points</th>
+                            <th className="py-2 px-3">Pos</th>
+                            <th className="py-2 px-3">Driver</th>
+                            <th className="py-2 px-3">Team</th>
+                            <th className="py-2 px-3 font-mono">Grid</th>
+                            <th className="py-2 px-3 font-mono">+/-</th>
+                            <th className="py-2 px-3 font-mono">Laps</th>
+                            <th className="py-2 px-3">Status</th>
+                            <th className="py-2 px-3 font-mono text-right">Pts</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-800/40">
+                        <tbody className="divide-y divide-neutral-900">
                           {raceDetails.results.map((res: any) => (
-                            <tr key={res.driver_name} className="hover:bg-slate-800/30">
-                              <td className="p-2.5 font-bold font-mono">
+                            <tr key={res.driver_name} className="hover:bg-neutral-900/60 transition">
+                              <td className="py-2 px-3 font-mono text-neutral-300 font-medium">
                                 {res.position ? res.position : 'DNF'}
                               </td>
-                              <td className="p-2.5 font-semibold text-white">{res.driver_name}</td>
-                              <td className="p-2.5 text-slate-400">{res.team_name}</td>
-                              <td className="p-2.5 font-mono text-slate-400">{res.grid_position}</td>
-                              <td className={`p-2.5 font-mono font-bold ${
-                                res.positions_gained > 0
+                              <td className="py-2 px-3 font-medium text-white">{res.driver_name}</td>
+                              <td className="py-2 px-3 text-neutral-400">{res.team_name}</td>
+                              <td className="py-2 px-3 font-mono text-neutral-500">{res.grid_position}</td>
+                              <td className={`py-2 px-3 font-mono ${res.positions_gained > 0
                                   ? 'text-emerald-400'
                                   : res.positions_gained < 0
-                                  ? 'text-rose-400'
-                                  : 'text-slate-500'
-                              }`}>
+                                    ? 'text-rose-400'
+                                    : 'text-neutral-500'
+                                }`}>
                                 {res.positions_gained > 0 ? `+${res.positions_gained}` : res.positions_gained}
                               </td>
-                              <td className="p-2.5 font-mono text-slate-300">{res.laps_completed}</td>
-                              <td className="p-2.5 text-slate-400">{res.status}</td>
-                              <td className="p-2.5 font-mono font-bold text-amber-400">{res.points}</td>
+                              <td className="py-2 px-3 font-mono text-neutral-400">{res.laps_completed}</td>
+                              <td className="py-2 px-3 text-neutral-400">{res.status}</td>
+                              <td className="py-2 px-3 font-mono text-right text-neutral-200 font-semibold">{res.points}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -532,29 +515,29 @@ export default function Dashboard() {
                   </div>
 
                   {/* Pit Stops Summary */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                    <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-blue-400" /> Pit Stop Execution Log (Decimal 8,3 Duration)
-                    </h3>
-                    <div className="overflow-x-auto max-h-60 overflow-y-auto">
+                  <div className="bg-neutral-900/40 border border-neutral-900 rounded-lg p-5">
+                    <div className="text-xs font-semibold text-neutral-300 mb-3 flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-neutral-400" /> Pit Stop Execution Log
+                    </div>
+                    <div className="overflow-x-auto max-h-56 overflow-y-auto">
                       <table className="w-full text-left text-xs">
-                        <thead className="bg-slate-800/60 text-slate-400 uppercase text-[10px]">
+                        <thead className="border-b border-neutral-800 text-neutral-400 text-[11px] font-medium">
                           <tr>
-                            <th className="p-2">Lap</th>
-                            <th className="p-2">Driver</th>
-                            <th className="p-2">Team</th>
-                            <th className="p-2">Stop Time</th>
-                            <th className="p-2 text-right">Duration (Sec)</th>
+                            <th className="py-2 px-3 font-mono">Lap</th>
+                            <th className="py-2 px-3">Driver</th>
+                            <th className="py-2 px-3">Team</th>
+                            <th className="py-2 px-3 font-mono">Time</th>
+                            <th className="py-2 px-3 font-mono text-right">Duration</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-800/40">
+                        <tbody className="divide-y divide-neutral-900">
                           {raceDetails.pitStops.map((ps: any, idx: number) => (
-                            <tr key={idx} className="hover:bg-slate-800/30">
-                              <td className="p-2 font-mono text-slate-400">{ps.lap_number}</td>
-                              <td className="p-2 font-medium text-white">{ps.driver_name}</td>
-                              <td className="p-2 text-slate-400">{ps.team_name}</td>
-                              <td className="p-2 font-mono text-slate-400">{ps.stop_time}</td>
-                              <td className="p-2 font-mono font-bold text-right text-blue-400">
+                            <tr key={idx} className="hover:bg-neutral-900/60 transition">
+                              <td className="py-2 px-3 font-mono text-neutral-500">{ps.lap_number}</td>
+                              <td className="py-2 px-3 text-neutral-300">{ps.driver_name}</td>
+                              <td className="py-2 px-3 text-neutral-500">{ps.team_name}</td>
+                              <td className="py-2 px-3 font-mono text-neutral-500">{ps.stop_time}</td>
+                              <td className="py-2 px-3 font-mono text-right text-neutral-200">
                                 {Number(ps.duration).toFixed(3)}s
                               </td>
                             </tr>
@@ -571,31 +554,31 @@ export default function Dashboard() {
 
         {/* TAB 2: STANDINGS */}
         {activeTab === 'standings' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             {/* Driver Standings */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-              <h2 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-amber-400" /> Driver World Championship
-              </h2>
+            <div className="bg-neutral-900/40 border border-neutral-900 rounded-lg p-5">
+              <div className="text-xs font-semibold text-neutral-300 mb-3 flex items-center gap-1.5 pb-2 border-b border-neutral-900">
+                <Trophy className="w-3.5 h-3.5 text-neutral-400" /> Driver World Championship
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-800/60 text-slate-400 uppercase text-[10px]">
+                  <thead className="border-b border-neutral-800 text-neutral-400 text-[11px] font-medium">
                     <tr>
-                      <th className="p-2.5">Rank</th>
-                      <th className="p-2.5">Driver</th>
-                      <th className="p-2.5">Team</th>
-                      <th className="p-2.5 text-center">Wins</th>
-                      <th className="p-2.5 text-right">Points</th>
+                      <th className="py-2 px-3 font-mono">Rank</th>
+                      <th className="py-2 px-3">Driver</th>
+                      <th className="py-2 px-3">Team</th>
+                      <th className="py-2 px-3 font-mono text-center">Wins</th>
+                      <th className="py-2 px-3 font-mono text-right">Points</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/40">
+                  <tbody className="divide-y divide-neutral-900">
                     {standings.drivers.map((d: any) => (
-                      <tr key={d.driver_name} className="hover:bg-slate-800/30">
-                        <td className="p-2.5 font-bold font-mono text-amber-400">{d.championship_rank}</td>
-                        <td className="p-2.5 font-semibold text-white">{d.driver_name}</td>
-                        <td className="p-2.5 text-slate-400">{d.team_name}</td>
-                        <td className="p-2.5 font-mono text-center text-slate-300">{d.total_wins}</td>
-                        <td className="p-2.5 font-mono font-black text-right text-emerald-400">{d.championship_points}</td>
+                      <tr key={d.driver_name} className="hover:bg-neutral-900/60 transition">
+                        <td className="py-2 px-3 font-mono text-neutral-400">{d.championship_rank}</td>
+                        <td className="py-2 px-3 font-medium text-white">{d.driver_name}</td>
+                        <td className="py-2 px-3 text-neutral-500">{d.team_name}</td>
+                        <td className="py-2 px-3 font-mono text-center text-neutral-400">{d.total_wins}</td>
+                        <td className="py-2 px-3 font-mono text-right text-neutral-200 font-semibold">{d.championship_points}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -604,29 +587,29 @@ export default function Dashboard() {
             </div>
 
             {/* Constructor Standings */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-              <h2 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                <Flag className="w-5 h-5 text-red-500" /> Constructors Championship
-              </h2>
+            <div className="bg-neutral-900/40 border border-neutral-900 rounded-lg p-5">
+              <div className="text-xs font-semibold text-neutral-300 mb-3 flex items-center gap-1.5 pb-2 border-b border-neutral-900">
+                <Flag className="w-3.5 h-3.5 text-neutral-400" /> Constructors Championship
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-800/60 text-slate-400 uppercase text-[10px]">
+                  <thead className="border-b border-neutral-800 text-neutral-400 text-[11px] font-medium">
                     <tr>
-                      <th className="p-2.5">Team</th>
-                      <th className="p-2.5">Nationality</th>
-                      <th className="p-2.5 text-center">Wins</th>
-                      <th className="p-2.5 text-center">Podiums</th>
-                      <th className="p-2.5 text-right">Total Points</th>
+                      <th className="py-2 px-3">Team</th>
+                      <th className="py-2 px-3">Nationality</th>
+                      <th className="py-2 px-3 font-mono text-center">Wins</th>
+                      <th className="py-2 px-3 font-mono text-center">Podiums</th>
+                      <th className="py-2 px-3 font-mono text-right">Points</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/40">
+                  <tbody className="divide-y divide-neutral-900">
                     {standings.teams.map((t: any) => (
-                      <tr key={t.team_name} className="hover:bg-slate-800/30">
-                        <td className="p-2.5 font-bold text-white">{t.team_name}</td>
-                        <td className="p-2.5 text-slate-400">{t.nationality}</td>
-                        <td className="p-2.5 font-mono text-center text-slate-300">{t.wins}</td>
-                        <td className="p-2.5 font-mono text-center text-amber-400">{t.podiums}</td>
-                        <td className="p-2.5 font-mono font-black text-right text-emerald-400">{t.total_points}</td>
+                      <tr key={t.team_name} className="hover:bg-neutral-900/60 transition">
+                        <td className="py-2 px-3 font-medium text-white">{t.team_name}</td>
+                        <td className="py-2 px-3 text-neutral-500">{t.nationality}</td>
+                        <td className="py-2 px-3 font-mono text-center text-neutral-400">{t.wins}</td>
+                        <td className="py-2 px-3 font-mono text-center text-neutral-400">{t.podiums}</td>
+                        <td className="py-2 px-3 font-mono text-right text-neutral-200 font-semibold">{t.total_points}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -638,69 +621,72 @@ export default function Dashboard() {
 
         {/* TAB 3: STORED PROCEDURE DEMO */}
         {activeTab === 'driver-card' && (
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-2xl mx-auto space-y-6">
+          <div className="bg-neutral-900/40 border border-neutral-900 rounded-lg p-6 max-w-xl mx-auto space-y-5">
             <div>
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <Gauge className="w-5 h-5 text-indigo-400" /> Stored Procedure: Driver Season Card
+              <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+                <Gauge className="w-4 h-4 text-neutral-400" /> Driver Season Performance Card
               </h2>
-              <p className="text-xs text-slate-400 mt-1">
-                Executes MySQL procedure: <code className="bg-slate-800 px-1.5 py-0.5 rounded text-indigo-300">CALL sp_get_driver_season_summary(2023, driver)</code>
+              <p className="text-xs text-neutral-400 mt-0.5">
+                Executes MySQL Stored Procedure: <code className="font-mono text-neutral-300">CALL sp_get_driver_season_summary(2023, driver)</code>
               </p>
             </div>
 
             <div className="flex gap-2">
-              <input
-                type="text"
-                value={driverSearch}
-                onChange={(e) => setDriverSearch(e.target.value)}
-                placeholder="Driver surname (e.g. Verstappen, Alonso, Hamilton)"
-                className="flex-1 bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-indigo-500"
-              />
+              <div className="relative flex-1">
+                <Search className="w-3.5 h-3.5 text-neutral-500 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  value={driverSearch}
+                  onChange={(e) => setDriverSearch(e.target.value)}
+                  placeholder="Driver surname (Verstappen, Alonso, Hamilton)"
+                  className="w-full bg-neutral-900 border border-neutral-800 pl-8 pr-3 py-1.5 rounded-md text-xs text-white focus:outline-none focus:border-neutral-600 transition"
+                />
+              </div>
               <button
                 onClick={() => loadDriverSummary(driverSearch)}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-4 py-2 rounded-lg transition"
+                className="bg-neutral-800 hover:bg-neutral-700 text-white font-medium text-xs px-3.5 py-1.5 rounded-md transition border border-neutral-700"
               >
-                Execute Procedure
+                Execute
               </button>
             </div>
 
             {driverSummary ? (
-              <div className="grid grid-cols-2 gap-4 bg-slate-950/60 p-5 rounded-xl border border-slate-800">
-                <div className="col-span-2 border-b border-slate-800 pb-3">
-                  <span className="text-xs text-slate-400 uppercase font-bold">Driver Name</span>
-                  <div className="text-2xl font-black text-white">{driverSummary.driver_name}</div>
-                  <span className="text-xs text-indigo-400">2023 Championship Statistics</span>
+              <div className="grid grid-cols-2 gap-3 bg-neutral-950 p-4 rounded-md border border-neutral-900 text-xs">
+                <div className="col-span-2 pb-2.5 border-b border-neutral-900">
+                  <div className="text-[11px] text-neutral-500 uppercase tracking-wider">Driver Profile</div>
+                  <div className="text-base font-semibold text-white mt-0.5">{driverSummary.driver_name}</div>
+                  <div className="text-[11px] text-neutral-400">2023 Season Totals</div>
                 </div>
                 <div>
-                  <span className="text-xs text-slate-400">Races Entered</span>
-                  <div className="text-xl font-bold font-mono text-white">{driverSummary.races_entered}</div>
+                  <div className="text-[11px] text-neutral-500">Races Entered</div>
+                  <div className="text-sm font-mono text-neutral-200 mt-0.5">{driverSummary.races_entered}</div>
                 </div>
                 <div>
-                  <span className="text-xs text-slate-400">Best Finish</span>
-                  <div className="text-xl font-bold font-mono text-amber-400">P{driverSummary.best_finish}</div>
+                  <div className="text-[11px] text-neutral-500">Best Finish</div>
+                  <div className="text-sm font-mono text-neutral-200 mt-0.5">P{driverSummary.best_finish}</div>
                 </div>
                 <div>
-                  <span className="text-xs text-slate-400">Total Wins</span>
-                  <div className="text-xl font-bold font-mono text-emerald-400">{driverSummary.total_wins}</div>
+                  <div className="text-[11px] text-neutral-500">Total Wins</div>
+                  <div className="text-sm font-mono text-neutral-200 mt-0.5">{driverSummary.total_wins}</div>
                 </div>
                 <div>
-                  <span className="text-xs text-slate-400">Total Podiums</span>
-                  <div className="text-xl font-bold font-mono text-amber-400">{driverSummary.podiums}</div>
+                  <div className="text-[11px] text-neutral-500">Total Podiums</div>
+                  <div className="text-sm font-mono text-neutral-200 mt-0.5">{driverSummary.podiums}</div>
                 </div>
                 <div>
-                  <span className="text-xs text-slate-400">Total Points</span>
-                  <div className="text-xl font-bold font-mono text-emerald-400">{driverSummary.total_points}</div>
+                  <div className="text-[11px] text-neutral-500">Total Points</div>
+                  <div className="text-sm font-mono text-neutral-200 mt-0.5">{driverSummary.total_points}</div>
                 </div>
                 <div>
-                  <span className="text-xs text-slate-400">Avg Pit Stop Duration</span>
-                  <div className="text-xl font-bold font-mono text-blue-400">
+                  <div className="text-[11px] text-neutral-500">Avg Pit Stop</div>
+                  <div className="text-sm font-mono text-neutral-200 mt-0.5">
                     {driverSummary.avg_pit_stop_duration ? `${driverSummary.avg_pit_stop_duration}s` : 'N/A'}
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="text-center py-8 text-xs text-slate-500">
-                No record returned from stored procedure for &quot;{driverSearch}&quot;.
+              <div className="text-center py-6 text-xs text-neutral-500">
+                No record returned for &quot;{driverSearch}&quot;.
               </div>
             )}
           </div>
@@ -708,23 +694,23 @@ export default function Dashboard() {
 
         {/* TAB 4: STRATEGY DESK (CRUD & AUTHORIZATION) */}
         {activeTab === 'strategy' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             {/* Create Strategy Form */}
-            <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-xl p-5">
-              <h2 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
-                <Plus className="w-4 h-4 text-emerald-400" /> New Strategy Recommendation
-              </h2>
-              <p className="text-[11px] text-slate-400 mb-4">
-                Enforces Role-Based Access Control: Viewers cannot create or delete notes.
+            <div className="lg:col-span-1 bg-neutral-900/40 border border-neutral-900 rounded-lg p-5">
+              <div className="text-xs font-semibold text-neutral-200 mb-1 flex items-center gap-1.5">
+                <Plus className="w-3.5 h-3.5 text-neutral-400" /> New Strategy Note
+              </div>
+              <p className="text-[11px] text-neutral-500 mb-4">
+                RBAC enforced: Only Strategists can insert or delete records.
               </p>
 
               <form onSubmit={handleAddStrategy} className="space-y-3">
                 <div>
-                  <label className="text-xs text-slate-400">Select Grand Prix</label>
+                  <label className="text-[11px] text-neutral-400 block mb-1">Grand Prix</label>
                   <select
                     value={selectedRaceId || ''}
                     onChange={(e) => setSelectedRaceId(Number(e.target.value))}
-                    className="w-full bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg text-xs text-white"
+                    className="w-full bg-neutral-900 border border-neutral-800 px-2.5 py-1.5 rounded-md text-xs text-white focus:outline-none"
                   >
                     {races.map((r) => (
                       <option key={r.race_id} value={r.race_id}>
@@ -735,22 +721,22 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-400">Strategy Title</label>
+                  <label className="text-[11px] text-neutral-400 block mb-1">Strategy Title</label>
                   <input
                     type="text"
                     value={noteTitle}
                     onChange={(e) => setNoteTitle(e.target.value)}
                     placeholder="e.g. 2-Stop Undercut on Lap 18"
-                    className="w-full bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg text-xs text-white"
+                    className="w-full bg-neutral-900 border border-neutral-800 px-2.5 py-1.5 rounded-md text-xs text-white focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-400">Recommended Tyre</label>
+                  <label className="text-[11px] text-neutral-400 block mb-1">Recommended Tyre</label>
                   <select
                     value={noteTyre}
                     onChange={(e) => setNoteTyre(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg text-xs text-white"
+                    className="w-full bg-neutral-900 border border-neutral-800 px-2.5 py-1.5 rounded-md text-xs text-white focus:outline-none"
                   >
                     <option value="Soft">Soft (Red)</option>
                     <option value="Medium">Medium (Yellow)</option>
@@ -760,69 +746,69 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-400">Strategy Analysis / Instructions</label>
+                  <label className="text-[11px] text-neutral-400 block mb-1">Analysis / Notes</label>
                   <textarea
                     rows={3}
                     value={noteContent}
                     onChange={(e) => setNoteContent(e.target.value)}
-                    placeholder="Detail telemetry justification and pit window..."
-                    className="w-full bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg text-xs text-white"
+                    placeholder="Provide pit window and tyre degradation metrics..."
+                    className="w-full bg-neutral-900 border border-neutral-800 px-2.5 py-1.5 rounded-md text-xs text-white focus:outline-none"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={userRole !== 'Strategist'}
-                  className={`w-full py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 ${
-                    userRole === 'Strategist'
-                      ? 'bg-red-600 hover:bg-red-500 text-white'
-                      : 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                  }`}
+                  className={`w-full py-2 rounded-md text-xs font-medium transition ${userRole === 'Strategist'
+                      ? 'bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700'
+                      : 'bg-neutral-900 text-neutral-600 border border-neutral-900 cursor-not-allowed'
+                    }`}
                 >
-                  <Plus className="w-4 h-4" /> Save Strategy Note (INSERT)
+                  Save Strategy Note (INSERT)
                 </button>
               </form>
             </div>
 
-            {/* Existing Notes Feed (Demonstrates SELECT & DELETE) */}
+            {/* Existing Notes Feed */}
             <div className="lg:col-span-2 space-y-3">
-              <h2 className="text-sm font-bold text-white mb-2 flex items-center justify-between">
-                <span>Active Strategy Notes (SQL DML: SELECT / DELETE)</span>
-                <span className="text-xs text-slate-400">{notes.length} total notes</span>
-              </h2>
+              <div className="flex items-center justify-between text-xs text-neutral-400 px-1">
+                <span className="font-medium text-neutral-300">Active Strategy Notes</span>
+                <span>{notes.length} records</span>
+              </div>
 
               {notes.length === 0 ? (
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 text-center text-xs text-slate-500">
-                  No strategy notes recorded yet. Add one using the form on the left!
+                <div className="bg-neutral-900/30 border border-neutral-900 rounded-lg p-8 text-center text-xs text-neutral-500">
+                  No strategy notes recorded yet.
                 </div>
               ) : (
                 notes.map((n) => (
-                  <div key={n.note_id} className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex justify-between items-start">
+                  <div key={n.note_id} className="bg-neutral-900/40 border border-neutral-900 rounded-lg p-3.5 flex justify-between items-start gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-white">{n.title}</span>
-                        <span className="text-[10px] bg-slate-800 text-emerald-400 px-2 py-0.5 rounded font-mono">
-                          Tyre: {n.recommended_tyre}
+                        <span className="text-xs font-semibold text-white">{n.title}</span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400">
+                          {n.recommended_tyre}
                         </span>
-                        <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded">
-                          By: {n.author_role}
+                        <span className="text-[10px] text-neutral-500">
+                          by {n.author_role}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-300">{n.content}</p>
-                      <div className="text-[10px] text-slate-500">Created: {new Date(n.created_at).toLocaleString()}</div>
+                      <p className="text-xs text-neutral-300">{n.content}</p>
+                      <div className="text-[10px] text-neutral-500 font-mono">
+                        {new Date(n.created_at).toLocaleString()}
+                      </div>
                     </div>
 
                     <button
                       onClick={() => handleDeleteStrategy(n.note_id)}
                       disabled={userRole !== 'Strategist'}
                       title={userRole !== 'Strategist' ? 'Only Strategists can delete' : 'Delete note'}
-                      className={`p-2 rounded-lg transition ${
-                        userRole === 'Strategist'
-                          ? 'text-rose-400 hover:bg-rose-500/20'
-                          : 'text-slate-600 cursor-not-allowed'
-                      }`}
+                      className={`p-1.5 rounded transition ${userRole === 'Strategist'
+                          ? 'text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10'
+                          : 'text-neutral-700 cursor-not-allowed'
+                        }`}
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 ))
@@ -834,37 +820,27 @@ export default function Dashboard() {
         {/* TAB 5: STUDENT B - TELEMETRY & RACE EVENTS (NOSQL LAYER) */}
         {activeTab === 'telemetry' && (
           <div className="space-y-6">
-            {/* Header info badge */}
-            <div className="bg-gradient-to-r from-cyan-950/60 to-slate-900 border border-cyan-800/40 rounded-xl p-4 flex flex-wrap items-center justify-between gap-4">
+            {/* Top Bar */}
+            <div className="bg-neutral-900/40 border border-neutral-900 rounded-lg p-4 flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-cyan-600/20 border border-cyan-500/40 rounded-lg text-cyan-400">
-                  <Radio className="w-5 h-5 animate-pulse" />
-                </div>
+                <Radio className="w-4 h-4 text-neutral-400" />
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-base font-bold text-white">High-Frequency Telemetry & Incident Feed</h2>
-                    <span className="text-[10px] font-mono bg-cyan-950 text-cyan-400 border border-cyan-700/50 px-2 py-0.5 rounded">
-                      MongoDB motorsport_telemetry
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400">
-                    Stores multi-dimensional sensor metrics and dynamic event logs without relational schema bottlenecks.
-                  </p>
+                  <div className="text-xs font-semibold text-white">Telemetry & Event Stream</div>
+                  <div className="text-[11px] text-neutral-500">MongoDB collection: telemetry_samples & race_events</div>
                 </div>
               </div>
 
-              {/* Lap Selection Buttons */}
-              <div className="flex items-center gap-1.5 bg-slate-900/80 p-1.5 rounded-lg border border-slate-800">
-                <span className="text-[11px] text-slate-400 font-medium px-2">Lap:</span>
+              {/* Lap Selection */}
+              <div className="flex items-center gap-1 text-xs">
+                <span className="text-neutral-500 mr-1">Lap:</span>
                 {[1, 5, 15, 25, 35, 45, 50].map((lapNum) => (
                   <button
                     key={lapNum}
                     onClick={() => setSelectedLap(lapNum)}
-                    className={`px-2.5 py-1 text-xs font-mono font-bold rounded transition ${
-                      selectedLap === lapNum
-                        ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                        : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-                    }`}
+                    className={`px-2 py-1 text-xs font-mono rounded transition ${selectedLap === lapNum
+                        ? 'bg-neutral-800 text-white border border-neutral-700'
+                        : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+                      }`}
                   >
                     L{lapNum}
                   </button>
@@ -872,68 +848,63 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Top Row: Interactive Telemetry Studio & Metric Readouts */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Telemetry Visualizer Chart */}
-              <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+            {/* Telemetry Visualizer Chart */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+              <div className="lg:col-span-2 bg-neutral-900/40 border border-neutral-900 rounded-lg p-5 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-neutral-900">
                   <div>
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-cyan-400" /> Head-to-Head Telemetry Trace (Lap {selectedLap})
+                    <h3 className="text-xs font-semibold text-white flex items-center gap-1.5">
+                      <TrendingUp className="w-3.5 h-3.5 text-neutral-400" /> Head-to-Head Trace (Lap {selectedLap})
                     </h3>
-                    <p className="text-[11px] text-slate-400">
-                      Querying compound index: <code className="text-cyan-300 font-mono text-[10px] bg-slate-800 px-1 rounded">&#123; race_id: 1, driver_id: 1, lap_number: 1 &#125;</code>
-                    </p>
                   </div>
 
                   {/* Driver Selectors */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 text-xs">
                     <select
                       value={driverAId}
                       onChange={(e) => setDriverAId(Number(e.target.value))}
-                      className="bg-slate-800 border border-cyan-500/40 text-cyan-300 text-xs font-bold rounded px-2.5 py-1 focus:outline-none"
+                      className="bg-neutral-900 border border-neutral-800 text-sky-400 font-medium rounded px-2 py-1 focus:outline-none"
                     >
                       {AVAILABLE_DRIVERS.map((d) => (
-                        <option key={d.id} value={d.id}>Driver A: {d.code} ({d.name.split(' ').pop()})</option>
+                        <option key={d.id} value={d.id} className="bg-neutral-900 text-neutral-200">{d.code} ({d.name.split(' ').pop()})</option>
                       ))}
                     </select>
 
-                    <span className="text-xs font-bold text-slate-500">vs</span>
+                    <span className="text-neutral-500 text-[11px]">vs</span>
 
                     <select
                       value={driverBId}
                       onChange={(e) => setDriverBId(Number(e.target.value))}
-                      className="bg-slate-800 border border-amber-500/40 text-amber-300 text-xs font-bold rounded px-2.5 py-1 focus:outline-none"
+                      className="bg-neutral-900 border border-neutral-800 text-amber-400 font-medium rounded px-2 py-1 focus:outline-none"
                     >
                       {AVAILABLE_DRIVERS.map((d) => (
-                        <option key={d.id} value={d.id}>Driver B: {d.code} ({d.name.split(' ').pop()})</option>
+                        <option key={d.id} value={d.id} className="bg-neutral-900 text-neutral-200">{d.code} ({d.name.split(' ').pop()})</option>
                       ))}
                     </select>
                   </div>
                 </div>
 
                 {/* Metric Selector Buttons */}
-                <div className="flex gap-2">
+                <div className="flex gap-1.5">
                   {(['speed', 'throttle', 'rpm', 'gear'] as const).map((m) => (
                     <button
                       key={m}
                       onClick={() => setMetricMode(m)}
-                      className={`text-xs font-semibold px-3 py-1 rounded-md capitalize transition ${
-                        metricMode === m
-                          ? 'bg-slate-700 text-cyan-300 border border-slate-600'
-                          : 'bg-slate-800/60 text-slate-400 hover:text-slate-200'
-                      }`}
+                      className={`text-xs px-2.5 py-1 rounded transition capitalize ${metricMode === m
+                          ? 'bg-neutral-800 text-white font-medium border border-neutral-700'
+                          : 'text-neutral-500 hover:text-neutral-300'
+                        }`}
                     >
-                      {m === 'speed' ? 'Vehicle Speed (km/h)' : m === 'throttle' ? 'Throttle Application (%)' : m === 'rpm' ? 'Engine RPM' : 'Gear Shift Map'}
+                      {m}
                     </button>
                   ))}
                 </div>
 
                 {/* Chart Frame */}
-                <div className="bg-slate-950 p-3 rounded-lg border border-slate-800/80">
+                <div className="bg-neutral-950 p-2.5 rounded border border-neutral-900">
                   {telemetryLoading ? (
-                    <div className="h-56 flex items-center justify-center text-xs text-slate-500">
-                      Loading sensor metrics from MongoDB collection...
+                    <div className="h-44 flex items-center justify-center text-xs text-neutral-500">
+                      Querying MongoDB...
                     </div>
                   ) : (
                     renderSvgTelemetry()
@@ -943,89 +914,79 @@ export default function Dashboard() {
 
               {/* Sensor Stat Cards */}
               <div className="lg:col-span-1 space-y-4">
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <Layers className="w-3.5 h-3.5 text-cyan-400" /> Telemetry Delta Readout
-                  </h3>
+                <div className="bg-neutral-900/40 border border-neutral-900 rounded-lg p-5 space-y-3">
+                  <div className="text-xs font-semibold text-neutral-300 flex items-center gap-1.5 pb-2 border-b border-neutral-900">
+                    <Layers className="w-3.5 h-3.5 text-neutral-400" /> Delta Readout
+                  </div>
 
-                  <div className="space-y-2.5">
-                    <div className="bg-slate-950 p-3 rounded-lg border border-slate-800/80 flex justify-between items-center">
+                  <div className="space-y-2 text-xs">
+                    <div className="bg-neutral-950 p-2.5 rounded border border-neutral-900 flex justify-between items-center">
                       <div>
-                        <div className="text-[11px] text-slate-400">Peak Straightaway Speed</div>
-                        <div className="text-base font-black font-mono text-cyan-400">
+                        <div className="text-[11px] text-neutral-500">Peak Speed</div>
+                        <div className="text-sm font-mono font-medium text-white">
                           {Math.max(...telemetrySamples.filter(s => s.driver_id === driverAId).map(s => s.telemetry?.speed || 0), 322)} km/h
                         </div>
-                        <div className="text-[10px] text-slate-500">{AVAILABLE_DRIVERS.find(d => d.id === driverAId)?.code}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-[11px] text-slate-400">Comparison Peak</div>
-                        <div className="text-base font-black font-mono text-amber-400">
+                        <div className="text-[11px] text-neutral-500">Comp. Peak</div>
+                        <div className="text-sm font-mono font-medium text-neutral-300">
                           {Math.max(...telemetrySamples.filter(s => s.driver_id === driverBId).map(s => s.telemetry?.speed || 0), 318)} km/h
                         </div>
-                        <div className="text-[10px] text-slate-500">{AVAILABLE_DRIVERS.find(d => d.id === driverBId)?.code}</div>
                       </div>
                     </div>
 
-                    <div className="bg-slate-950 p-3 rounded-lg border border-slate-800/80 flex justify-between items-center">
+                    <div className="bg-neutral-950 p-2.5 rounded border border-neutral-900 flex justify-between items-center">
                       <div>
-                        <div className="text-[11px] text-slate-400">Avg Throttle Application</div>
-                        <div className="text-base font-black font-mono text-cyan-400">78.4%</div>
-                        <div className="text-[10px] text-slate-500">{AVAILABLE_DRIVERS.find(d => d.id === driverAId)?.code}</div>
+                        <div className="text-[11px] text-neutral-500">Avg Throttle</div>
+                        <div className="text-sm font-mono font-medium text-white">78.4%</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-[11px] text-slate-400">Comparison Avg</div>
-                        <div className="text-base font-black font-mono text-amber-400">75.9%</div>
-                        <div className="text-[10px] text-slate-500">{AVAILABLE_DRIVERS.find(d => d.id === driverBId)?.code}</div>
+                        <div className="text-[11px] text-neutral-500">Comp. Avg</div>
+                        <div className="text-sm font-mono font-medium text-neutral-300">75.9%</div>
                       </div>
                     </div>
 
-                    <div className="bg-slate-950 p-3 rounded-lg border border-slate-800/80 flex justify-between items-center">
+                    <div className="bg-neutral-950 p-2.5 rounded border border-neutral-900 flex justify-between items-center">
                       <div>
-                        <div className="text-[11px] text-slate-400">DRS Activations on Lap {selectedLap}</div>
-                        <div className="text-sm font-bold font-mono text-emerald-400">Zone 1 & Zone 3 (Active)</div>
+                        <div className="text-[11px] text-neutral-500">DRS Status</div>
+                        <div className="text-xs font-mono text-neutral-300">Zones 1 & 3</div>
                       </div>
-                      <div className="text-right">
-                        <span className="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded font-mono">
-                          DRS ENABLED
-                        </span>
-                      </div>
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-900">
+                        ACTIVE
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {/* MongoDB Justification Card for Academic Rubric */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                  <div className="text-xs font-bold text-slate-300 mb-1">Academic Architectural Rationale</div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Time-series telemetry points are captured at ~10-50Hz. MongoDB provides non-blocking horizontal document writes and variable sensor schemas without altering SQL table definitions.
+                <div className="bg-neutral-900/30 border border-neutral-900 rounded-lg p-3.5">
+                  <div className="text-[11px] font-medium text-neutral-400 mb-1">Architectural Justification</div>
+                  <p className="text-[11px] text-neutral-500 leading-relaxed">
+                    Time-series telemetry samples (10-50Hz) are stored in MongoDB to prevent table bloat in MySQL while maintaining foreign reference links via <code className="text-neutral-400 font-mono">race_id</code> and <code className="text-neutral-400 font-mono">driver_id</code>.
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Middle Section: MongoDB Aggregation Pipeline - Speed Trap */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="bg-neutral-900/40 border border-neutral-900 rounded-lg p-5 space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-neutral-900">
                 <div>
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Activity className="w-4 h-4 text-emerald-400" /> Aggregation Pipeline: Speed Trap & Stint Analytics (Rubric Sec. 7)
+                  <h3 className="text-xs font-semibold text-white flex items-center gap-1.5">
+                    <Activity className="w-3.5 h-3.5 text-neutral-400" /> Aggregation Pipeline: Speed Trap & Stint Analytics
                   </h3>
-                  <p className="text-[11px] text-slate-400">
-                    Groups telemetry samples by driver, aggregating top speeds, average throttle %, and DRS usage.
-                  </p>
                 </div>
 
                 <button
                   onClick={() => setShowPipelineCode(!showPipelineCode)}
-                  className="text-xs bg-slate-800 hover:bg-slate-700 text-cyan-300 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-1.5 transition"
+                  className="text-[11px] text-neutral-400 hover:text-neutral-200 flex items-center gap-1 transition"
                 >
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showPipelineCode ? 'rotate-180' : ''}`} />
-                  {showPipelineCode ? 'Hide Pipeline Query' : 'View Aggregation Code'}
+                  {showPipelineCode ? 'Hide Pipeline' : 'View Aggregation Pipeline'}
                 </button>
               </div>
 
               {showPipelineCode && (
-                <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 font-mono text-[11px] text-emerald-400 overflow-x-auto">
+                <div className="bg-neutral-950 p-3.5 rounded border border-neutral-900 font-mono text-[11px] text-neutral-300 overflow-x-auto">
                   <pre>{`db.telemetry_samples.aggregate([
   { $match: { race_id: ${selectedRaceId || 1} } },
   {
@@ -1047,33 +1008,33 @@ export default function Dashboard() {
               {/* Speed Trap Table */}
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-800/60 text-slate-400 uppercase text-[10px]">
+                  <thead className="border-b border-neutral-800 text-neutral-400 text-[11px] font-medium">
                     <tr>
-                      <th className="p-2.5 rounded-l">Rank</th>
-                      <th className="p-2.5">Driver</th>
-                      <th className="p-2.5 font-mono text-right">Top Speed (km/h)</th>
-                      <th className="p-2.5 font-mono text-right">Avg Speed (km/h)</th>
-                      <th className="p-2.5 font-mono text-right">Avg Throttle (%)</th>
-                      <th className="p-2.5 font-mono text-center">DRS Deployments</th>
-                      <th className="p-2.5 font-mono text-right rounded-r">Samples</th>
+                      <th className="py-2 px-3 font-mono">Rank</th>
+                      <th className="py-2 px-3">Driver</th>
+                      <th className="py-2 px-3 font-mono text-right">Top Speed</th>
+                      <th className="py-2 px-3 font-mono text-right">Avg Speed</th>
+                      <th className="py-2 px-3 font-mono text-right">Avg Throttle</th>
+                      <th className="py-2 px-3 font-mono text-center">DRS Deployments</th>
+                      <th className="py-2 px-3 font-mono text-right">Samples</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/40">
+                  <tbody className="divide-y divide-neutral-900">
                     {speedTrap.map((st: any, idx: number) => (
-                      <tr key={st.driver_code || idx} className="hover:bg-slate-800/30">
-                        <td className="p-2.5 font-mono font-bold text-amber-400">#{idx + 1}</td>
-                        <td className="p-2.5 font-bold text-white flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: AVAILABLE_DRIVERS.find(d => d.code === st.driver_code)?.color || '#94a3b8' }}></span>
+                      <tr key={st.driver_code || idx} className="hover:bg-neutral-900/60 transition">
+                        <td className="py-2 px-3 font-mono text-neutral-500">#{idx + 1}</td>
+                        <td className="py-2 px-3 font-medium text-white flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: AVAILABLE_DRIVERS.find(d => d.code === st.driver_code)?.color || '#94a3b8' }}></span>
                           {st.driver_code}
-                          <span className="text-[11px] text-slate-400 font-normal">
-                            ({AVAILABLE_DRIVERS.find(d => d.code === st.driver_code)?.name || 'Driver'})
+                          <span className="text-neutral-500 text-[11px]">
+                            ({AVAILABLE_DRIVERS.find(d => d.code === st.driver_code)?.name?.split(' ').pop() || 'Driver'})
                           </span>
                         </td>
-                        <td className="p-2.5 font-mono font-black text-right text-cyan-400">{st.top_speed} km/h</td>
-                        <td className="p-2.5 font-mono text-right text-slate-300">{st.avg_speed} km/h</td>
-                        <td className="p-2.5 font-mono text-right text-emerald-400">{st.avg_throttle}%</td>
-                        <td className="p-2.5 font-mono text-center text-amber-400">{st.total_drs_samples}</td>
-                        <td className="p-2.5 font-mono text-right text-slate-500">{st.samples_analyzed}</td>
+                        <td className="py-2 px-3 font-mono text-right text-neutral-200 font-semibold">{st.top_speed} km/h</td>
+                        <td className="py-2 px-3 font-mono text-right text-neutral-400">{st.avg_speed} km/h</td>
+                        <td className="py-2 px-3 font-mono text-right text-neutral-400">{st.avg_throttle}%</td>
+                        <td className="py-2 px-3 font-mono text-center text-neutral-400">{st.total_drs_samples}</td>
+                        <td className="py-2 px-3 font-mono text-right text-neutral-500">{st.samples_analyzed}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1082,108 +1043,92 @@ export default function Dashboard() {
             </div>
 
             {/* Bottom Row: Race Events Feed & Incident Logging (NoSQL CRUD) */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
               {/* Incident Feed */}
-              <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-amber-400" /> Race Control Incidents & Flag Timeline
-                  </h3>
-                  <span className="text-xs text-slate-400">Collection: <code className="text-slate-300 font-mono">race_events</code> ({raceEvents.length})</span>
+              <div className="lg:col-span-2 bg-neutral-900/40 border border-neutral-900 rounded-lg p-5 space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-neutral-900 text-xs">
+                  <div className="font-semibold text-white flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 text-neutral-400" /> Race Control Incidents
+                  </div>
+                  <span className="text-neutral-500 font-mono text-[11px]">{raceEvents.length} events logged</span>
                 </div>
 
-                <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
-                  {raceEvents.map((ev, idx) => {
-                    const badgeColor = 
-                      ev.event_type === 'Virtual Safety Car' ? 'bg-amber-950 text-amber-400 border-amber-800' :
-                      ev.event_type === 'Safety Car' ? 'bg-orange-950 text-orange-400 border-orange-800' :
-                      ev.event_type === 'Red Flag' ? 'bg-rose-950 text-rose-400 border-rose-800' :
-                      ev.event_type === 'Penalty' ? 'bg-purple-950 text-purple-400 border-purple-800' :
-                      ev.event_type === 'Overtake' ? 'bg-emerald-950 text-emerald-400 border-emerald-800' :
-                      'bg-slate-800 text-slate-300 border-slate-700';
-
-                    return (
-                      <div key={ev._id || idx} className="bg-slate-950 p-3.5 rounded-xl border border-slate-800/80 flex items-start justify-between gap-4">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-mono font-bold text-slate-300 bg-slate-800 px-2 py-0.5 rounded">
-                              Lap {ev.lap_number}
+                <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+                  {raceEvents.map((ev, idx) => (
+                    <div key={ev._id || idx} className="bg-neutral-950 p-3 rounded border border-neutral-900 flex items-start justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="font-mono text-neutral-400 bg-neutral-900 px-1.5 py-0.5 rounded text-[11px]">
+                            L{ev.lap_number}
+                          </span>
+                          <span className="font-medium text-white">
+                            {ev.event_type}
+                          </span>
+                          {ev.driver_name && (
+                            <span className="text-neutral-400 text-[11px]">
+                              • {ev.driver_name}
                             </span>
-                            <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded border ${badgeColor}`}>
-                              {ev.event_type}
-                            </span>
-                            {ev.driver_name && (
-                              <span className="text-xs text-slate-300 font-medium">
-                                • {ev.driver_name}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-slate-300 leading-snug">{ev.description}</p>
-                          <div className="text-[10px] text-slate-500 font-mono">
-                            Timestamp: {new Date(ev.timestamp).toLocaleTimeString()}
-                          </div>
+                          )}
                         </div>
-
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                          ev.severity === 'Critical' ? 'text-rose-400 bg-rose-950/40 border border-rose-900' :
-                          ev.severity === 'High' ? 'text-amber-400 bg-amber-950/40 border border-amber-900' :
-                          'text-slate-400 bg-slate-900 border border-slate-800'
-                        }`}>
-                          {ev.severity}
-                        </span>
+                        <p className="text-xs text-neutral-300 leading-snug">{ev.description}</p>
+                        <div className="text-[10px] text-neutral-500 font-mono">
+                          {new Date(ev.timestamp).toLocaleTimeString()}
+                        </div>
                       </div>
-                    );
-                  })}
+
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-900 text-neutral-400">
+                        {ev.severity}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Log Incident Form (NoSQL CRUD Form) */}
-              <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Plus className="w-4 h-4 text-cyan-400" /> Log Incident (NoSQL INSERT)
-                  </h3>
+              {/* Log Incident Form */}
+              <div className="lg:col-span-1 bg-neutral-900/40 border border-neutral-900 rounded-lg p-5 space-y-3">
+                <div className="text-xs font-semibold text-white flex items-center gap-1.5">
+                  <Plus className="w-3.5 h-3.5 text-neutral-400" /> Log Race Incident
                 </div>
-                <p className="text-[11px] text-slate-400">
-                  Adds unstructured document into <code className="text-cyan-300 font-mono text-[10px]">race_events</code>. Enforces role-based permissions.
+                <p className="text-[11px] text-neutral-500">
+                  Inserts document into MongoDB <code className="text-neutral-400 font-mono">race_events</code> collection.
                 </p>
 
                 <form onSubmit={handleLogEvent} className="space-y-3">
                   <div>
-                    <label className="text-[11px] text-slate-400">Incident Classification</label>
+                    <label className="text-[11px] text-neutral-400 block mb-1">Incident Type</label>
                     <select
                       value={newEvType}
                       onChange={(e) => setNewEvType(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg text-xs text-white"
+                      className="w-full bg-neutral-900 border border-neutral-800 px-2.5 py-1.5 rounded-md text-xs text-white focus:outline-none"
                     >
                       <option value="Yellow Flag">Yellow Flag</option>
                       <option value="Virtual Safety Car">Virtual Safety Car (VSC)</option>
                       <option value="Safety Car">Safety Car (Full SC)</option>
-                      <option value="Red Flag">Red Flag (Session Suspended)</option>
+                      <option value="Red Flag">Red Flag</option>
                       <option value="Penalty">Time / Grid Penalty</option>
-                      <option value="Incident">Driver Incident / Investigation</option>
-                      <option value="Overtake">Decisive Overtake</option>
+                      <option value="Incident">Driver Incident</option>
+                      <option value="Overtake">Overtake</option>
                     </select>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-[11px] text-slate-400">Lap Number</label>
+                      <label className="text-[11px] text-neutral-400 block mb-1">Lap</label>
                       <input
                         type="number"
                         min={1}
                         max={70}
                         value={newEvLap}
                         onChange={(e) => setNewEvLap(Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg text-xs text-white"
+                        className="w-full bg-neutral-900 border border-neutral-800 px-2.5 py-1.5 rounded-md text-xs text-white focus:outline-none"
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] text-slate-400">Severity</label>
+                      <label className="text-[11px] text-neutral-400 block mb-1">Severity</label>
                       <select
                         value={newEvSeverity}
                         onChange={(e) => setNewEvSeverity(e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg text-xs text-white"
+                        className="w-full bg-neutral-900 border border-neutral-800 px-2.5 py-1.5 rounded-md text-xs text-white focus:outline-none"
                       >
                         <option value="Low">Low</option>
                         <option value="Medium">Medium</option>
@@ -1194,43 +1139,37 @@ export default function Dashboard() {
                   </div>
 
                   <div>
-                    <label className="text-[11px] text-slate-400">Driver / Sector Involved</label>
+                    <label className="text-[11px] text-neutral-400 block mb-1">Driver / Sector</label>
                     <input
                       type="text"
                       value={newEvDriver}
                       onChange={(e) => setNewEvDriver(e.target.value)}
                       placeholder="e.g. Charles Leclerc / Turn 4"
-                      className="w-full bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg text-xs text-white"
+                      className="w-full bg-neutral-900 border border-neutral-800 px-2.5 py-1.5 rounded-md text-xs text-white focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[11px] text-slate-400">Narrative Description</label>
+                    <label className="text-[11px] text-neutral-400 block mb-1">Description</label>
                     <textarea
                       rows={2}
                       value={newEvDesc}
                       onChange={(e) => setNewEvDesc(e.target.value)}
-                      placeholder="Detail incident specifics for race stewards..."
-                      className="w-full bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg text-xs text-white"
+                      placeholder="Detail incident specifics..."
+                      className="w-full bg-neutral-900 border border-neutral-800 px-2.5 py-1.5 rounded-md text-xs text-white focus:outline-none"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={userRole !== 'Strategist' || eventPosting}
-                    className={`w-full py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 ${
-                      userRole === 'Strategist'
-                        ? 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-md shadow-cyan-900/40'
-                        : 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                    }`}
+                    className={`w-full py-2 rounded-md text-xs font-medium transition ${userRole === 'Strategist'
+                        ? 'bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700'
+                        : 'bg-neutral-900 text-neutral-600 border border-neutral-900 cursor-not-allowed'
+                      }`}
                   >
-                    <Plus className="w-4 h-4" /> {eventPosting ? 'Logging Incident...' : 'Insert Incident Document'}
+                    {eventPosting ? 'Logging Incident...' : 'Insert Incident Document'}
                   </button>
-                  {userRole !== 'Strategist' && (
-                    <p className="text-[10px] text-rose-400 text-center">
-                      * Switch to &quot;Race Strategist&quot; role to submit race incidents.
-                    </p>
-                  )}
                 </form>
               </div>
             </div>
