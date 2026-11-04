@@ -117,23 +117,23 @@ def build_student_report():
     r_mid.font.name = "Times New Roman"
     r_mid.font.size = Pt(11)
 
-    # Student Details Table
-    tbl = doc.add_table(rows=3, cols=2)
-    tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
-    tbl.rows[0].cells[0].text = "Submitted by:"
-    tbl.rows[0].cells[1].text = "Under the guidance of:"
-    tbl.rows[1].cells[0].text = "Mokshitreddy Nallaballe (PES2UG24CS284)\nManav Dewangan (PES2UG24CS262)\nSection: 5th Sem 'E', Team 8"
-    tbl.rows[1].cells[1].text = "Dr. Nagasundari S\nAssociate Professor\nDept. of Computer Science & Engineering\nPES University Electronic City Campus"
-    tbl.rows[2].cells[0].text = ""
-    tbl.rows[2].cells[1].text = ""
-
-    for r in tbl.rows:
-        for c in r.cells:
-            for p in c.paragraphs:
-                p.paragraph_format.line_spacing = 1.2
-                for run in p.runs:
-                    run.font.name = "Times New Roman"
-                    run.font.size = Pt(10.5)
+    # Student Details
+    p_sub = doc.add_paragraph()
+    p_sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r_sub_h = p_sub.add_run("Submitted by:\n\n")
+    r_sub_h.font.name = "Times New Roman"
+    r_sub_h.font.size = Pt(13)
+    r_sub_h.font.bold = True
+    
+    r_names = p_sub.add_run(
+        "Mokshitreddy Nallaballe (PES2UG24CS284)\n"
+        "Manav Dewangan (PES2UG24CS262)\n\n"
+        "Fifth Semester, Section 'E', Team 8\n"
+        "Department of Computer Science & Engineering\n"
+        "PES University, Electronic City Campus\n"
+    )
+    r_names.font.name = "Times New Roman"
+    r_names.font.size = Pt(12)
 
     doc.add_page_break()
 
@@ -157,14 +157,14 @@ def build_student_report():
 
     add_body_p(
         doc,
-        "This is to certify that the DBMS Level 3 Mini-Project entitled \"Motorsport Race Performance and Strategy Management System\" is a bonafide work carried out by Mokshitreddy Nallaballe (PES2UG24CS284) and Manav Dewangan (PES2UG24CS262), students of Fifth Semester B.Tech in Computer Science and Engineering, PES University, Bengaluru, in partial fulfilment of the requirements for the award of the degree of Bachelor of Technology in Computer Science & Engineering during the academic period August 2026 – December 2026.\n\n"
-        "It is certified that all corrections and suggestions indicated during internal review have been incorporated in this report. The project has been approved as it satisfies the academic requirements in respect of Level 3 DBMS Experiential Learning Project work."
+        "This is to certify that the DBMS Level 3 Project entitled \"Motorsport Race Performance and Strategy Management System\" is a bonafide work carried out by Mokshitreddy Nallaballe (PES2UG24CS284) and Manav Dewangan (PES2UG24CS262), students of Fifth Semester B.Tech in Computer Science and Engineering, PES University, Bengaluru, in partial fulfilment of the requirements for the completion of fifth semester DBMS Project (UE24CS351A) in the Program of Study - Bachelor of Technology in Computer Science and Engineering under rules and regulations of PES University, Bengaluru during the period August 2026 – December 2026.\n\n"
+        "It is certified that all corrections and suggestions indicated for assessment have been incorporated in the report. The project has been approved as it satisfies the 5th semester academic requirements in respect of project work."
     )
 
     p_sig = doc.add_paragraph()
-    p_sig.paragraph_format.space_before = Pt(40)
+    p_sig.paragraph_format.space_before = Pt(50)
     p_sig.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    r_sig = p_sig.add_run("Dr. Nagasundari S\nFaculty Guide, Associate Professor\nDepartment of Computer Science & Engineering\nPES University, Electronic City Campus")
+    r_sig = p_sig.add_run("Faculty Evaluator / Internal Examiner\nDepartment of Computer Science & Engineering\nPES University, Electronic City Campus")
     r_sig.font.name = "Times New Roman"
     r_sig.font.size = Pt(11)
     r_sig.font.bold = True
@@ -182,7 +182,7 @@ def build_student_report():
 
     add_body_p(
         doc,
-        "We hereby declare that the DBMS Project entitled \"Motorsport Race Performance and Strategy Management System\" has been carried out by us under the esteemed guidance of Dr. Nagasundari S, Associate Professor, Department of Computer Science and Engineering, PES University, Bengaluru. We submit this in partial fulfilment of the requirements for the award of the degree of Bachelor of Technology in Computer Science and Engineering for the course UE24CS351A during the academic semester August – December 2026.\n\n"
+        "We hereby declare that the DBMS Project entitled \"Motorsport Race Performance and Strategy Management System\" has been carried out independently by us in partial fulfilment of the course requirements for the award of degree of Bachelor of Technology in Computer Science and Engineering of PES University, Bengaluru during the academic semester August – December 2026.\n\n"
         "We further confirm that this work is original, has not been submitted in part or full for any other degree or diploma to any university, and complies strictly with the academic code of integrity."
     )
 
