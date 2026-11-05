@@ -16,3 +16,7 @@ web-app/.next/
 web-app/node_modules/
 web-app/.env
 web-app/.env.local
+
+# Temporary Office lock files
+.~lock.*
+*.tmp

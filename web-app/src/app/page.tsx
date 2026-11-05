@@ -376,8 +376,8 @@ export default function Dashboard() {
         <button
           onClick={() => setActiveTab('races')}
           className={`px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'races'
-              ? 'bg-neutral-800 text-white'
-              : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+            ? 'bg-neutral-800 text-white'
+            : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
             }`}
         >
           <Flag className="w-3.5 h-3.5 text-neutral-400" /> Grand Prix Results
@@ -385,8 +385,8 @@ export default function Dashboard() {
         <button
           onClick={() => setActiveTab('standings')}
           className={`px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'standings'
-              ? 'bg-neutral-800 text-white'
-              : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+            ? 'bg-neutral-800 text-white'
+            : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
             }`}
         >
           <Trophy className="w-3.5 h-3.5 text-neutral-400" /> Standings
@@ -394,17 +394,17 @@ export default function Dashboard() {
         <button
           onClick={() => setActiveTab('driver-card')}
           className={`px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'driver-card'
-              ? 'bg-neutral-800 text-white'
-              : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+            ? 'bg-neutral-800 text-white'
+            : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
             }`}
         >
-          <Gauge className="w-3.5 h-3.5 text-neutral-400" /> Driver Card(Proc)
+          <Gauge className="w-3.5 h-3.5 text-neutral-400" /> Driver Card
         </button>
         <button
           onClick={() => setActiveTab('strategy')}
           className={`px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'strategy'
-              ? 'bg-neutral-800 text-white'
-              : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+            ? 'bg-neutral-800 text-white'
+            : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
             }`}
         >
           <Activity className="w-3.5 h-3.5 text-neutral-400" /> Strategy Desk
@@ -412,8 +412,8 @@ export default function Dashboard() {
         <button
           onClick={() => setActiveTab('telemetry')}
           className={`px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'telemetry'
-              ? 'bg-neutral-800 text-white'
-              : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+            ? 'bg-neutral-800 text-white'
+            : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
             }`}
         >
           <Zap className="w-3.5 h-3.5 text-neutral-400" /> Telemetry & Events
@@ -436,8 +436,8 @@ export default function Dashboard() {
                     key={r.race_id}
                     onClick={() => setSelectedRaceId(r.race_id)}
                     className={`w-full text-left px-3 py-2 rounded text-xs transition flex items-center justify-between ${selectedRaceId === r.race_id
-                        ? 'bg-neutral-800 text-white border border-neutral-700/60'
-                        : 'hover:bg-neutral-900 text-neutral-400 hover:text-neutral-200'
+                      ? 'bg-neutral-800 text-white border border-neutral-700/60'
+                      : 'hover:bg-neutral-900 text-neutral-400 hover:text-neutral-200'
                       }`}
                   >
                     <div>
@@ -488,27 +488,55 @@ export default function Dashboard() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-neutral-900">
-                          {raceDetails.results.map((res: any) => (
-                            <tr key={res.driver_name} className="hover:bg-neutral-900/60 transition">
-                              <td className="py-2 px-3 font-mono text-neutral-300 font-medium">
-                                {res.position ? res.position : 'DNF'}
-                              </td>
-                              <td className="py-2 px-3 font-medium text-white">{res.driver_name}</td>
-                              <td className="py-2 px-3 text-neutral-400">{res.team_name}</td>
-                              <td className="py-2 px-3 font-mono text-neutral-500">{res.grid_position}</td>
-                              <td className={`py-2 px-3 font-mono ${res.positions_gained > 0
-                                  ? 'text-emerald-400'
+                          {raceDetails.results.map((res: any, idx: number) => {
+                            const isP1 = res.position === 1;
+                            const isPodium = res.position === 2 || res.position === 3;
+                            const isTop5 = res.position === 4 || res.position === 5;
+
+                            const rowBg = isP1
+                              ? 'bg-amber-500/[0.07] hover:bg-amber-500/[0.12] border-l-2 border-l-amber-400'
+                              : isPodium
+                                ? 'bg-sky-500/[0.04] hover:bg-sky-500/[0.09] border-l-2 border-l-sky-400/80'
+                                : isTop5
+                                  ? 'bg-neutral-800/30 hover:bg-neutral-800/50 border-l-2 border-l-neutral-600'
+                                  : 'hover:bg-neutral-900/60';
+
+                            const badgeStyle = isP1
+                              ? 'text-amber-400 font-bold bg-amber-400/15 border border-amber-400/30 px-1.5 py-0.5 rounded'
+                              : isPodium
+                                ? 'text-sky-300 font-semibold bg-sky-400/10 border border-sky-400/20 px-1.5 py-0.5 rounded'
+                                : isTop5
+                                  ? 'text-neutral-200 font-medium bg-neutral-800 border border-neutral-700/60 px-1.5 py-0.5 rounded'
+                                  : 'text-neutral-400 font-medium';
+
+                            return (
+                              <tr key={res.driver_name || idx} className={`${rowBg} transition-colors`}>
+                                <td className="py-2.5 px-3 font-mono">
+                                  <span className={`inline-flex items-center justify-center min-w-[24px] ${badgeStyle}`}>
+                                    {res.position ? res.position : 'DNF'}
+                                  </span>
+                                </td>
+                                <td className={`py-2.5 px-3 font-medium ${isP1 ? 'text-amber-100 font-semibold' : isPodium ? 'text-neutral-100' : 'text-neutral-200'}`}>
+                                  {res.driver_name}
+                                </td>
+                                <td className="py-2.5 px-3 text-neutral-400">{res.team_name}</td>
+                                <td className="py-2.5 px-3 font-mono text-neutral-500">{res.grid_position}</td>
+                                <td className={`py-2.5 px-3 font-mono ${res.positions_gained > 0
+                                  ? 'text-emerald-400 font-medium'
                                   : res.positions_gained < 0
                                     ? 'text-rose-400'
                                     : 'text-neutral-500'
-                                }`}>
-                                {res.positions_gained > 0 ? `+${res.positions_gained}` : res.positions_gained}
-                              </td>
-                              <td className="py-2 px-3 font-mono text-neutral-400">{res.laps_completed}</td>
-                              <td className="py-2 px-3 text-neutral-400">{res.status}</td>
-                              <td className="py-2 px-3 font-mono text-right text-neutral-200 font-semibold">{res.points}</td>
-                            </tr>
-                          ))}
+                                  }`}>
+                                  {res.positions_gained > 0 ? `+${res.positions_gained}` : res.positions_gained}
+                                </td>
+                                <td className="py-2.5 px-3 font-mono text-neutral-400">{res.laps_completed}</td>
+                                <td className="py-2.5 px-3 text-neutral-400">{res.status}</td>
+                                <td className={`py-2.5 px-3 font-mono text-right ${isP1 ? 'text-amber-400 font-bold' : isPodium ? 'text-sky-300 font-semibold' : 'text-neutral-200 font-medium'}`}>
+                                  {res.points}
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>
@@ -760,8 +788,8 @@ export default function Dashboard() {
                   type="submit"
                   disabled={userRole !== 'Strategist'}
                   className={`w-full py-2 rounded-md text-xs font-medium transition ${userRole === 'Strategist'
-                      ? 'bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700'
-                      : 'bg-neutral-900 text-neutral-600 border border-neutral-900 cursor-not-allowed'
+                    ? 'bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700'
+                    : 'bg-neutral-900 text-neutral-600 border border-neutral-900 cursor-not-allowed'
                     }`}
                 >
                   Save Strategy Note (INSERT)
@@ -804,8 +832,8 @@ export default function Dashboard() {
                       disabled={userRole !== 'Strategist'}
                       title={userRole !== 'Strategist' ? 'Only Strategists can delete' : 'Delete note'}
                       className={`p-1.5 rounded transition ${userRole === 'Strategist'
-                          ? 'text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10'
-                          : 'text-neutral-700 cursor-not-allowed'
+                        ? 'text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10'
+                        : 'text-neutral-700 cursor-not-allowed'
                         }`}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -838,8 +866,8 @@ export default function Dashboard() {
                     key={lapNum}
                     onClick={() => setSelectedLap(lapNum)}
                     className={`px-2 py-1 text-xs font-mono rounded transition ${selectedLap === lapNum
-                        ? 'bg-neutral-800 text-white border border-neutral-700'
-                        : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+                      ? 'bg-neutral-800 text-white border border-neutral-700'
+                      : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
                       }`}
                   >
                     L{lapNum}
@@ -891,8 +919,8 @@ export default function Dashboard() {
                       key={m}
                       onClick={() => setMetricMode(m)}
                       className={`text-xs px-2.5 py-1 rounded transition capitalize ${metricMode === m
-                          ? 'bg-neutral-800 text-white font-medium border border-neutral-700'
-                          : 'text-neutral-500 hover:text-neutral-300'
+                        ? 'bg-neutral-800 text-white font-medium border border-neutral-700'
+                        : 'text-neutral-500 hover:text-neutral-300'
                         }`}
                     >
                       {m}
@@ -920,38 +948,58 @@ export default function Dashboard() {
                   </div>
 
                   <div className="space-y-2 text-xs">
-                    <div className="bg-neutral-950 p-2.5 rounded border border-neutral-900 flex justify-between items-center">
+                    <div className="bg-neutral-950 p-2.5 rounded border border-neutral-900 flex justify-between items-center hover:border-neutral-800 transition">
                       <div>
-                        <div className="text-[11px] text-neutral-500">Peak Speed</div>
-                        <div className="text-sm font-mono font-medium text-white">
-                          {Math.max(...telemetrySamples.filter(s => s.driver_id === driverAId).map(s => s.telemetry?.speed || 0), 322)} km/h
+                        <div className="text-[11px] text-neutral-500 mb-0.5">Peak Speed (Car A)</div>
+                        <div className="text-base font-mono font-bold text-sky-400">
+                          {Math.max(...telemetrySamples.filter(s => s.driver_id === driverAId).map(s => s.telemetry?.speed || 0), 322)}
+                          <span className="text-[11px] font-sans font-normal text-neutral-400 ml-1">km/h</span>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-[11px] text-neutral-500">Comp. Peak</div>
-                        <div className="text-sm font-mono font-medium text-neutral-300">
-                          {Math.max(...telemetrySamples.filter(s => s.driver_id === driverBId).map(s => s.telemetry?.speed || 0), 318)} km/h
+                        <div className="text-[11px] text-neutral-500 mb-0.5">Comp. Peak (Car B)</div>
+                        <div className="text-base font-mono font-bold text-amber-400">
+                          {Math.max(...telemetrySamples.filter(s => s.driver_id === driverBId).map(s => s.telemetry?.speed || 0), 318)}
+                          <span className="text-[11px] font-sans font-normal text-neutral-400 ml-1">km/h</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-neutral-950 p-2.5 rounded border border-neutral-900 flex justify-between items-center hover:border-neutral-800 transition">
+                      <div>
+                        <div className="text-[11px] text-neutral-500 mb-0.5">Avg Throttle (Car A)</div>
+                        <div className="text-base font-mono font-bold text-emerald-400">
+                          {(() => {
+                            const samples = telemetrySamples.filter(s => s.driver_id === driverAId);
+                            if (samples.length === 0) return '78.4%';
+                            const avg = samples.reduce((acc, s) => acc + (s.telemetry?.throttle || 0), 0) / samples.length;
+                            return `${avg.toFixed(1)}%`;
+                          })()}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[11px] text-neutral-500 mb-0.5">Comp. Avg (Car B)</div>
+                        <div className="text-base font-mono font-bold text-teal-400">
+                          {(() => {
+                            const samples = telemetrySamples.filter(s => s.driver_id === driverBId);
+                            if (samples.length === 0) return '75.9%';
+                            const avg = samples.reduce((acc, s) => acc + (s.telemetry?.throttle || 0), 0) / samples.length;
+                            return `${avg.toFixed(1)}%`;
+                          })()}
                         </div>
                       </div>
                     </div>
 
                     <div className="bg-neutral-950 p-2.5 rounded border border-neutral-900 flex justify-between items-center">
                       <div>
-                        <div className="text-[11px] text-neutral-500">Avg Throttle</div>
-                        <div className="text-sm font-mono font-medium text-white">78.4%</div>
+                        <div className="text-[11px] text-neutral-500 mb-0.5">DRS Activation</div>
+                        <div className="text-xs font-mono font-medium text-neutral-300">
+                          {telemetrySamples.filter(s => (s.driver_id === driverAId || s.driver_id === driverBId) && s.telemetry?.drs === 1).length > 0
+                            ? 'Zones 1 & 3'
+                            : 'Inactive In Stint'}
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-[11px] text-neutral-500">Comp. Avg</div>
-                        <div className="text-sm font-mono font-medium text-neutral-300">75.9%</div>
-                      </div>
-                    </div>
-
-                    <div className="bg-neutral-950 p-2.5 rounded border border-neutral-900 flex justify-between items-center">
-                      <div>
-                        <div className="text-[11px] text-neutral-500">DRS Status</div>
-                        <div className="text-xs font-mono text-neutral-300">Zones 1 & 3</div>
-                      </div>
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-900">
+                      <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                         ACTIVE
                       </span>
                     </div>
@@ -1164,8 +1212,8 @@ export default function Dashboard() {
                     type="submit"
                     disabled={userRole !== 'Strategist' || eventPosting}
                     className={`w-full py-2 rounded-md text-xs font-medium transition ${userRole === 'Strategist'
-                        ? 'bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700'
-                        : 'bg-neutral-900 text-neutral-600 border border-neutral-900 cursor-not-allowed'
+                      ? 'bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700'
+                      : 'bg-neutral-900 text-neutral-600 border border-neutral-900 cursor-not-allowed'
                       }`}
                   >
                     {eventPosting ? 'Logging Incident...' : 'Insert Incident Document'}

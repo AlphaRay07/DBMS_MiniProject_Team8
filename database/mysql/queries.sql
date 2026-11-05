@@ -82,9 +82,9 @@ SELECT
     d.driver_name,
     t.team_name,
     COUNT(rr.result_id) AS total_starts,
-    COUNT(CASE WHEN rr.status = 'Finished' OR rr.status LIKE '+% Lap%' THEN 1 END) AS total_finishes,
-    COUNT(CASE WHEN rr.status NOT LIKE 'Finished' AND rr.status NOT LIKE '+% Lap%' THEN 1 END) AS total_dnfs,
-    ROUND((COUNT(CASE WHEN rr.status = 'Finished' OR rr.status LIKE '+% Lap%' THEN 1 END) / COUNT(rr.result_id)) * 100, 1) AS completion_percentage
+    COUNT(CASE WHEN rr.status IN ('Finished', 'Lapped') OR rr.status LIKE '+% Lap%' THEN 1 END) AS total_finishes,
+    COUNT(CASE WHEN rr.status NOT IN ('Finished', 'Lapped') AND rr.status NOT LIKE '+% Lap%' THEN 1 END) AS total_dnfs,
+    ROUND((COUNT(CASE WHEN rr.status IN ('Finished', 'Lapped') OR rr.status LIKE '+% Lap%' THEN 1 END) / COUNT(rr.result_id)) * 100, 1) AS completion_percentage
 FROM driver d
 JOIN race_result rr ON d.driver_id = rr.driver_id
 LEFT JOIN team t ON rr.team_id = t.team_id
