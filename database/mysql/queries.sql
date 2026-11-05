@@ -144,7 +144,7 @@ DROP PROCEDURE IF EXISTS sp_get_driver_season_summary;
 DELIMITER //
 CREATE PROCEDURE sp_get_driver_season_summary(
     IN p_year INT,
-    IN p_driver_name VARCHAR(100)
+    IN p_driver_name VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 )
 BEGIN
     SELECT 
@@ -165,7 +165,7 @@ BEGIN
     JOIN race_result rr ON d.driver_id = rr.driver_id
     JOIN race r ON rr.race_id = r.race_id
     JOIN season s ON r.season_id = s.season_id
-    WHERE s.year = p_year AND d.driver_name LIKE CONCAT('%', p_driver_name, '%')
+    WHERE s.year = p_year AND d.driver_name LIKE CONCAT('%', p_driver_name COLLATE utf8mb4_unicode_ci, '%')
     GROUP BY d.driver_id, d.driver_name, s.season_id, s.year;
 END //
 DELIMITER ;

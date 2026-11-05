@@ -1,3 +1,6 @@
+import os
+import sys
+import json
 import re
 import time
 from datetime import datetime
@@ -10,9 +13,50 @@ HEADERS = {
     "User-Agent": "MotorsportRaceAnalysis/1.0"
 }
 
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "2023")
+
+
+def fetch_local(endpoint, table_name, records_key):
+    """Load from offline data/2023 directory if present (from data.zip)."""
+    if not os.path.exists(DATA_DIR):
+        return None
+
+    filename = None
+    if endpoint == "2023/constructors":
+        filename = "constructors.json"
+    elif endpoint == "2023/drivers":
+        filename = "drivers.json"
+    elif endpoint == "2023/races":
+        filename = "races.json"
+    elif endpoint == "2023/results":
+        filename = "results.json"
+    elif endpoint == "2023/qualifying":
+        filename = "qualifying.json"
+    elif endpoint == "2023/driverstandings":
+        filename = "driverstandings.json"
+    else:
+        m = re.match(r"^2023/(\d+)/pitstops$", endpoint)
+        if m:
+            filename = os.path.join("pitstops", f"round_{m.group(1)}.json")
+
+    if filename:
+        full_path = os.path.join(DATA_DIR, filename)
+        if os.path.exists(full_path):
+            with open(full_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                mr_data = data.get("MRData", {})
+                tbl = mr_data.get(table_name, {})
+                recs = tbl.get(records_key, [])
+                return recs
+    return None
+
 
 def fetch_all(endpoint, table_name, records_key, delay=0.5):
-    """Fetch every page of an endpoint using Jolpica pagination with rate-limiting and retry."""
+    """Fetch from local offline data if present; otherwise use Jolpica API."""
+    local_recs = fetch_local(endpoint, table_name, records_key)
+    if local_recs is not None:
+        return local_recs
+
     all_records = []
     offset = 0
     limit = 100
@@ -434,26 +478,51 @@ def main():
     print("  Motorsport Database Importer (2023 Season)")
     print("==================================================")
 
-    password = getpass("Enter MySQL root password: ")
-    connection = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password=password,
-        database="motorsport_db"
-    )
+    if "--all" in sys.argv:
+        password = os.getenv("MYSQL_PASSWORD", "")
+    else:
+        password = os.getenv("MYSQL_PASSWORD")
+        if password is None:
+            if sys.stdin.isatty():
+                password = getpass("Enter MySQL root password: ")
+            else:
+                password = ""
+
+    conn_config = {
+        "host": os.getenv("MYSQL_HOST", "localhost"),
+        "port": int(os.getenv("MYSQL_PORT", 3306)),
+        "user": os.getenv("MYSQL_USER", "root"),
+        "password": password,
+        "database": os.getenv("MYSQL_DATABASE", "motorsport_db")
+    }
+    if os.path.exists("/tmp/mysql.sock"):
+        conn_config["unix_socket"] = "/tmp/mysql.sock"
+
+    try:
+        connection = mysql.connector.connect(**conn_config)
+    except Exception:
+        # Fallback to local socket connection
+        connection = mysql.connector.connect(
+            user="root",
+            password="",
+            unix_socket="/tmp/mysql.sock",
+            database="motorsport_db"
+        )
     cursor = connection.cursor()
 
     try:
-        print("\nSelect import phase:")
-        print("1. Import Reference Data (Teams, Drivers, Circuits, Season)")
-        print("2. Import Races")
-        print("3. Import Race Results")
-        print("4. Import Qualifying Results")
-        print("5. Import Pit Stops")
-        print("6. Import Driver Standings")
-        print("7. Run ALL Import Stages (1 through 6)")
-
-        choice = input("\nEnter choice (1-7): ").strip()
+        if "--all" in sys.argv or not sys.stdin.isatty():
+            choice = "7"
+        else:
+            print("\nSelect import phase:")
+            print("1. Import Reference Data (Teams, Drivers, Circuits, Season)")
+            print("2. Import Races")
+            print("3. Import Race Results")
+            print("4. Import Qualifying Results")
+            print("5. Import Pit Stops")
+            print("6. Import Driver Standings")
+            print("7. Run ALL Import Stages (1 through 6)")
+            choice = input("\nEnter choice (1-7): ").strip()
 
         if choice == "1":
             import_reference_data(cursor, connection)

@@ -7,7 +7,9 @@ __pycache__/
 .DS_Store
 
 .ipynb_checkpoints/
-data/
+data/raw/
+data/processed/
+!data/2023/
 
 # Next.js web-app
 web-app/.next/
